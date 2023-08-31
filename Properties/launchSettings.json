@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SpeechToText (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "SpeechToText (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

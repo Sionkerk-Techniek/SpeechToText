@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="SpeechToText.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SpeechToText"
+    xmlns:vms="using:SpeechToText.ViewModels"
+    xmlns:device="using:Windows.Devices.Enumeration"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Speech to text">
+
+    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+        <StackPanel.Resources>
+            <DataTemplate x:Key="MessageViewTemplate" x:DataType="vms:Log">
+                <Grid Height="Auto" Margin="2" HorizontalAlignment="Stretch" Padding="-5,0,0,0">
+                    <StackPanel MinHeight="30" Padding="10, 0, 0, 10" Background="{x:Bind Background}"
+                                CornerRadius="{StaticResource ControlCornerRadius}">
+                        <TextBlock Text="{x:Bind MainText}" Padding="0, 8, 0, 0" 
+                                   Foreground="{ThemeResource SystemControlForegroundAltHighBrush}"
+                                   Style="{ThemeResource BodyTextBlockStyle}"/>
+                        <TextBlock Text="{x:Bind SubText}" Padding="0, 0, 0, 0" 
+                                   Foreground="{ThemeResource SystemControlForegroundAltHighBrush}"
+                                   Style="{ThemeResource BodyTextBlockStyle}"
+                                   Visibility="{x:Bind ShowSubtext, Mode=OneWay}"/>
+                        <TextBlock Text="{x:Bind Time}" Padding="0, 0, 0, 0" 
+                                   Foreground="{ThemeResource SystemControlForegroundAltMediumHighBrush}"
+                                   Style="{ThemeResource CaptionTextBlockStyle}"
+                                   Visibility="{x:Bind Expanded, Mode=OneWay}"/>
+                    </StackPanel>
+                </Grid>
+            </DataTemplate>
+        </StackPanel.Resources>
+        
+        <Border x:Name="Titlebar" VerticalAlignment="Top" Height="35">
+            <TextBlock Text="Speech to text" VerticalAlignment="Top" Margin="12,7,0,0"/>
+        </Border>
+
+        <!--Show error messages at the top-->
+        <InfoBar x:Name="ErrorHeader" x:FieldModifier="Internal"
+            IsOpen="{x:Bind Errormessage.IsOpen, Mode=OneWay}"
+            CloseButtonClick="{x:Bind Errormessage.Close}"
+            Title="{x:Bind Errormessage.Title, Mode=OneWay}" 
+            Message="{x:Bind Errormessage.Message, Mode=OneWay}"
+            Severity="{x:Bind Errormessage.Severity}">
+            <InfoBar.ActionButton>
+                <Button Content="{x:Bind Errormessage.ButtonMessage, Mode=OneWay}" 
+                        Click="{x:Bind Errormessage.PerformAction}"
+                        Visibility="{x:Bind Errormessage.ShowButton}"/>
+            </InfoBar.ActionButton>
+        </InfoBar>
+
+        <!--Buttons-->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" 
+                    Padding="0,0,0,15" x:DefaultBindMode="OneWay">
+            <!--Buttons starting and stopping translation-->
+            <AppBarButton Icon="Play" Label="Start vertaling"
+                          IsEnabled="{x:Bind Playstate.IsStopped}" Click="{x:Bind Playstate.Play}"/>
+            <AppBarButton Icon="Stop" Label="Stop vertaling" 
+                          IsEnabled="{x:Bind Playstate.IsPlaying}" Click="{x:Bind Playstate.Stop}"/>
+
+            <!--Button to toggle pushing translated messages-->
+            <AppBarToggleButton Icon="People" Label="Publiceer vertaling"
+                                IsChecked="{x:Bind Playstate.IsPosting, Mode=TwoWay}"/>
+            <AppBarSeparator/>
+
+            <!--Button to show/hide logs-->
+            <AppBarToggleButton Icon="Message" Label="Bekijk tekst" x:Name="ToggleLogs"
+                                IsChecked="{x:Bind _windowViewModel.ShowMessages, Mode=TwoWay}"/>
+            <AppBarSeparator/>
+
+            <!--Audio source selection dropdown-->
+            <AppBarButton Icon="Microphone" Label="Audiobron">
+                <AppBarButton.Flyout>
+                    <MenuFlyout x:Name="AudiosourceMenu" x:FieldModifier="Internal" 
+                                ShouldConstrainToRootBounds="False" ShowMode="Standard"
+                                Opening="{x:Bind Audiosource.UpdateDevices}" 
+                                Closed="{x:Bind Audiosource.SelectDevice}"/>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+        </StackPanel>
+
+        <!--Logs/messages-->
+        <ListView x:Name="Logview" ItemTemplate="{StaticResource MessageViewTemplate}"
+                  Visibility="{x:Bind _windowViewModel.ShowMessages, Mode=OneWay}"
+                  Height="{x:Bind _windowViewModel.MessagesHeight}"
+                  Padding="0,0,0,10" ItemsSource="{x:Bind Logs.Logs}" 
+                  SelectionChanged="{x:Bind Logs.UpdateSelected}" SelectionMode="Extended">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsStackPanel ItemsUpdatingScrollMode="KeepLastItemInView" VerticalAlignment="Bottom"/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+        </ListView>
+    </StackPanel>
+</Window>
