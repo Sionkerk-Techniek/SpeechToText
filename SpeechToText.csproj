@@ -31,9 +31,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.31.0" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.4.230822000" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
+    <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.36.0" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240311000" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.3233" />
+    <PackageReference Include="Telegram.Bot" Version="19.0.0" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 

@@ -11,6 +11,7 @@ namespace SpeechToText
     {
         public static MainWindow MainWindow { get; private set; }
         public static SpeechRecognition Recognizer { get; private set; }
+        public static TelegramConnection TelegramConnection { get; private set; }
 
         /// <summary>
         /// Program entry point
@@ -40,6 +41,7 @@ namespace SpeechToText
             AudiosourceViewModel.Instance.Initialise();
             Recognizer = new SpeechRecognition();
             Recognizer.Initialise();
+            TelegramConnection = new TelegramConnection();
         }
     }
 }

@@ -30,6 +30,8 @@ namespace SpeechToText
             translationConfig.SpeechRecognitionLanguage = "nl-NL";
             translationConfig.AddTargetLanguage("uk");
 
+            // https://stackoverflow.com/questions/3992798/how-to-programmatically-get-the-current-audio-level
+            // https://learn.microsoft.com/en-us/dotnet/standard/native-interop/pinvoke
             _audioConfig = AudioConfig.FromDefaultMicrophoneInput();
             //_audioConfig = AudioConfig.FromMicrophoneInput(AudiosourceViewModel.Instance.SelectedDevice.Id);
             _translator = new TranslationRecognizer(translationConfig, _audioConfig);
@@ -103,7 +105,7 @@ namespace SpeechToText
                         $"Translation: {result.Translations[_translator.TargetLanguages[0]]}");
                     Log($"Recognized: {result.Text}\n Translation: " +
                         $"{result.Translations[_translator.TargetLanguages[0]]}");
-                    Task.Run(async () => await TelegramConnection.Send(result.Translations[_translator.TargetLanguages[0]]));
+                    Task.Run(async () => await App.TelegramConnection.Send(result.Translations[_translator.TargetLanguages[0]]));
                     // TODO: do something with the translation
                     break;
                 case ResultReason.NoMatch:
