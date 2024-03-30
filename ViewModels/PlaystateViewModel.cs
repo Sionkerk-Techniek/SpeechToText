@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 
 namespace SpeechToText.ViewModels
@@ -60,6 +61,30 @@ namespace SpeechToText.ViewModels
         public static void ChangeFromBackgroundthread(bool isPlaying)
         {
             App.MainWindow.DispatcherQueue.TryEnqueue(() => Instance.IsPlaying = isPlaying);
+        }
+
+        public static async Task ChangeFromTelegramCommand(bool translate)
+        {
+            if (translate)
+            {
+                if (Instance.IsPlaying)
+                    await App.TelegramConnection.Send("Translation is already in progress");
+                else
+                {
+                    await App.TelegramConnection.Send("Starting translation");
+                    ChangeFromBackgroundthread(translate);
+                }
+            }
+            else
+            {
+                if (Instance.IsStopped)
+                    await App.TelegramConnection.Send("Translation is already stopped");
+                else
+                {
+                    await App.TelegramConnection.Send("Stopping translation");
+                    ChangeFromBackgroundthread(translate);
+                }
+            }
         }
 
         public PlaystateViewModel()

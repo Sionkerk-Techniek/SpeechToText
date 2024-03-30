@@ -47,13 +47,24 @@ namespace SpeechToText
 
         private async Task HandleMessage(ITelegramBotClient bot, Update update, CancellationToken cancelToken)
         {
-            Logging.Log("Telegram update received: " + update.ToString());
-            if (update.Message?.Text != null && update.Message.Text.StartsWith("/starttranslation"))
+            if (update.Message == null)
+                return;
+
+            string id = update.Message.Chat.Id.ToString();
+            string text = update.Message.Text ?? "null";
+            Logging.Log($"Telegram message received from {id}: " + text);
+            if (id != Settings.Instance.TelegramGroup && id != Settings.Instance.TelegramDebugGroup)
+            {
+                Logging.Log("Ignoring message from unauthorized user or group");
+                return;
+            }
+
+            if (text.StartsWith("/starttranslation"))
             {
                 Logging.Log("Received /starttranslation");
                 await PlaystateViewModel.ChangeFromTelegramCommand(translate: true);
             }
-            if (update.Message?.Text != null && update.Message.Text.StartsWith("/stoptranslation"))
+            else if (text.StartsWith("/stoptranslation"))
             {
                 Logging.Log("Received /stoptranslation");
                 await PlaystateViewModel.ChangeFromTelegramCommand(translate: false);

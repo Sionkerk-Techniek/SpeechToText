@@ -21,6 +21,7 @@ namespace SpeechToText
         public LogLevel MinimumLogLevel { get; set; } = LogLevel.Info;
         public string TelegramToken { get; init; }
         public string TelegramGroup { get; init; }
+        public string TelegramDebugGroup { get; init; }
 
         public async static Task Load()
         {
