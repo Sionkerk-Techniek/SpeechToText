@@ -31,7 +31,7 @@ namespace SpeechToText
             // Subscribe to messages
             ReceiverOptions receiverOptions = new()
             {
-                AllowedUpdates = Array.Empty<UpdateType>() //new UpdateType[] { UpdateType.Message }
+                AllowedUpdates = Array.Empty<UpdateType>()
             };
 
             using CancellationTokenSource cts = new();
@@ -53,21 +53,36 @@ namespace SpeechToText
             string id = update.Message.Chat.Id.ToString();
             string text = update.Message.Text ?? "null";
             Logging.Log($"Telegram message received from {id}: " + text);
+
+            // Only react to messages from these two sources
             if (id != Settings.Instance.TelegramGroup && id != Settings.Instance.TelegramDebugGroup)
             {
                 Logging.Log("Ignoring message from unauthorized user or group");
                 return;
             }
 
+            // Handle commands, send confirmations
             if (text.StartsWith("/starttranslation"))
             {
                 Logging.Log("Received /starttranslation");
-                await PlaystateViewModel.ChangeFromTelegramCommand(translate: true);
+                bool success = PlaystateViewModel.ChangeFromTelegramCommand(translate: true);
+                if (success)
+                    await Send("Starting translation");
+                else
+                    await Send("Translation is already in progress");
             }
             else if (text.StartsWith("/stoptranslation"))
             {
                 Logging.Log("Received /stoptranslation");
-                await PlaystateViewModel.ChangeFromTelegramCommand(translate: false);
+                bool success = PlaystateViewModel.ChangeFromTelegramCommand(translate: false);
+                if (success)
+                    await Send("Stopping translation");
+                else
+                    await Send("Translation is already stopped");
+            }
+            else if (text.StartsWith("/ping"))
+            {
+                await Send("Pong!", id);
             }
         }
 
