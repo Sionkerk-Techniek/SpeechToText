@@ -60,14 +60,14 @@
             <AppBarButton Icon="Stop" Label="Stop vertaling" 
                           IsEnabled="{x:Bind Playstate.IsPlaying}" Click="{x:Bind Playstate.Stop}"/>
 
-            <!--Button to toggle pushing translated messages-->
-            <AppBarToggleButton Icon="People" Label="Publiceer vertaling"
-                                IsChecked="{x:Bind Playstate.IsPosting, Mode=TwoWay}"/>
-            <AppBarSeparator/>
-
             <!--Button to show/hide logs-->
             <AppBarToggleButton Icon="Message" Label="Bekijk tekst" x:Name="ToggleLogs"
                                 IsChecked="{x:Bind _windowViewModel.ShowMessages, Mode=TwoWay}"/>
+            <AppBarSeparator/>
+
+            <!--Button to toggle pushing translated messages-->
+            <AppBarToggleButton Icon="Caption" Label="Houd op voorgrond"
+                                IsChecked="{x:Bind _windowViewModel.OnTop, Mode=TwoWay}"/>
             <AppBarSeparator/>
 
             <!--Audio source selection dropdown-->

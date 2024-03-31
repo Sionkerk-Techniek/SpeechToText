@@ -49,8 +49,6 @@ namespace SpeechToText.ViewModels
 
         public bool IsStopped => !IsPlaying;
 
-        public bool IsPosting { get; set; } = false;
-
         #pragma warning disable IDE0060 // Remove unused parameters
         public void Play(object sender, RoutedEventArgs e) => IsPlaying = true;
         public void Pause(object sender, RoutedEventArgs e) => IsPaused = !IsPaused;

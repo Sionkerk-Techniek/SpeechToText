@@ -38,6 +38,21 @@ namespace SpeechToText.ViewModels
             }
         }
 
+        private bool _onTop = false;
+        public bool OnTop
+        {
+            get => _onTop;
+            set
+            {
+                if (_onTop == value) 
+                    return;
+
+                _onTop = value;
+                OverlappedPresenter presenter = _appWindow.Presenter as OverlappedPresenter;
+                presenter.IsAlwaysOnTop = value;
+            }
+        }
+
         /// <summary>
         /// Sets various window settings such as size
         /// </summary>
@@ -65,6 +80,7 @@ namespace SpeechToText.ViewModels
             OverlappedPresenter presenter = _appWindow.Presenter as OverlappedPresenter;
             presenter.IsResizable = resizable;
             presenter.IsMaximizable = maximizable;
+            presenter.IsAlwaysOnTop = true;
 
             Resize(width, height);
             Instance = this;
