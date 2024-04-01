@@ -18,7 +18,19 @@
     <AppxBundle>Never</AppxBundle>
     <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
     <DefaultLanguage>nl-NL</DefaultLanguage>
+    <ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
   </PropertyGroup>
+  <ItemGroup>
+    <Content Remove="Assets\BadgeLogo.scale-100.png" />
+    <Content Remove="Assets\BadgeLogo.scale-200.png" />
+    <Content Remove="Assets\BadgeLogo.scale-400.png" />
+    <Content Remove="Assets\Icon.ico" />
+    <Content Remove="Assets\SplashScreen.scale-100.png" />
+    <Content Remove="Assets\SplashScreen.scale-400.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Assets\Icon.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -26,15 +38,20 @@
     <Content Include="Assets\Square150x150Logo.scale-200.png" />
     <Content Include="Assets\Square44x44Logo.scale-200.png" />
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
-    <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.36.0" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240311000" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.3233" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.3" />
     <PackageReference Include="Telegram.Bot" Version="19.0.0" />
+    <PackageReference Include="WinUIEx" Version="2.3.4" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 
