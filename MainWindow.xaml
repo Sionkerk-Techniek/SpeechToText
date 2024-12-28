@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Window
+<winex:WindowEx
     x:Class="SpeechToText.MainWindow"
+    xmlns:winex="using:WinUIEx"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:SpeechToText"
@@ -9,7 +10,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Title="Speech to text">
+    Title="Speech to text"
+    Width="400" Height="130" IsResizable="False"
+    IsMinimizable="True" IsMaximizable="False">
 
     <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Top">
         <StackPanel.Resources>
@@ -66,7 +69,7 @@
             <AppBarSeparator/>
 
             <!--Button to toggle pushing translated messages-->
-            <AppBarToggleButton Icon="Caption" Label="Houd op voorgrond"
+            <AppBarToggleButton Icon="Caption" Label="Houd op voorgrond" x:Name="ToggleOnTop"
                                 IsChecked="{x:Bind _windowViewModel.OnTop, Mode=TwoWay}"/>
             <AppBarSeparator/>
 
@@ -94,4 +97,4 @@
             </ListView.ItemsPanel>
         </ListView>
     </StackPanel>
-</Window>
+</winex:WindowEx>

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Drawing;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Windows.Graphics;
+using WinUIEx;
 
 namespace SpeechToText.ViewModels
 {
@@ -18,8 +20,6 @@ namespace SpeechToText.ViewModels
 
         private readonly AppWindow _appWindow;
 
-        public int Width { get; private set; }
-        public int Height { get; private set; }
         public int MessagesHeight { get; }
         private int _extraHeight = 0;  // For error messages
 
@@ -57,17 +57,10 @@ namespace SpeechToText.ViewModels
         /// Sets various window settings such as size
         /// </summary>
         /// <param name="window">The window object to change</param>
-        /// <param name="width">The window width in pixels</param>
-        /// <param name="height">The window height in pixels</param>
-        /// <param name="resizable">Whether the user is allowed to resize the window</param>
-        /// <param name="maximizable">Whether the user is allowed to maximize the window</param>
         /// <param name="extendsIntoTitlebar">Set to true if the window provides its own titlebar</param>
         /// <param name="messagesHeight">Additional height in pixels added when messages are shown</param>
-        public WindowViewModel(Window window, int width, int height,
-            bool resizable, bool maximizable, bool extendsIntoTitlebar, int messagesHeight)
+        public WindowViewModel(WindowEx window, int messagesHeight)
         {
-            Width = width;
-            Height = height;
             MessagesHeight = messagesHeight;
 
             // Get the window handle use it to get the AppWindow
@@ -75,24 +68,24 @@ namespace SpeechToText.ViewModels
             WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
             _appWindow = AppWindow.GetFromWindowId(windowId);
 
-            // Use own titlebar, disable resizing by the user
-            _appWindow.TitleBar.ExtendsContentIntoTitleBar = extendsIntoTitlebar;
-            OverlappedPresenter presenter = _appWindow.Presenter as OverlappedPresenter;
-            presenter.IsResizable = resizable;
-            presenter.IsMaximizable = maximizable;
-            presenter.IsAlwaysOnTop = true;
+            // Use own titlebar
+            _appWindow.TitleBar.ExtendsContentIntoTitleBar = true;
 
-            Resize(width, height);
+            // Set icon
+            System.Drawing.Icon _icon = new(
+                typeof(App).Assembly.GetManifestResourceStream("SpeechToText.Assets.Icon.ico"));
+            _appWindow.SetIcon(Win32Interop.GetIconIdFromIcon(_icon.Handle));
+
             Instance = this;
         }
 
-        /// <summary>
+        /// <summary>s
         /// Resize the window to <paramref name="width"/> pixels wide
         /// and <paramref name="height"/> pixels high
         /// </summary>
-        public void Resize(int width, int height)
+        public void Resize(double width, double height)
         {
-            _appWindow.Resize(new SizeInt32(width, height));
+            _appWindow.Resize(new SizeInt32((int)width, (int)height));
         }
 
         /// <summary>
@@ -112,9 +105,9 @@ namespace SpeechToText.ViewModels
         public void ToggleMessages()
         {
             if (_showMessages)
-                Resize(Width, Height + MessagesHeight + _extraHeight);
+                Resize(App.MainWindow.Width, App.MainWindow.Height + MessagesHeight + _extraHeight);
             else
-                Resize(Width, Height + _extraHeight);
+                Resize(App.MainWindow.Width, App.MainWindow.Height - MessagesHeight + _extraHeight);
         }
     }
 }

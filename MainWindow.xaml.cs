@@ -3,7 +3,7 @@ using SpeechToText.ViewModels;
 
 namespace SpeechToText
 {
-    public sealed partial class MainWindow : Window
+    public sealed partial class MainWindow : WinUIEx.WindowEx
     {
         private readonly WindowViewModel _windowViewModel;
         public readonly PlaystateViewModel Playstate;
@@ -14,9 +14,7 @@ namespace SpeechToText
         public MainWindow()
         {
             // TODO: use constructor which accepts viewmodels as arguments
-            _windowViewModel = new WindowViewModel(this, width: 400, height: 130,
-                resizable: false, maximizable: false, extendsIntoTitlebar: true,
-                messagesHeight: 250);
+            _windowViewModel = new WindowViewModel(this, messagesHeight: 250);
             Playstate = new PlaystateViewModel();
             Logs = new LogCollectionViewModel();
             Errormessage = new ErrormessageViewModel();
