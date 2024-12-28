@@ -61,6 +61,8 @@ namespace SpeechToText
 
             await _stream.WriteLineAsync($"[{_prefix[level]} {DateTime.Now:HH:mm:ss.fff}] {message}");
             await _stream.FlushAsync();
+            
+            await LogRemote(message);
         }
 
         public static void Log(string message, LogLevel level = LogLevel.Info)
@@ -71,6 +73,19 @@ namespace SpeechToText
         public static void Log(object obj, LogLevel level = LogLevel.Info)
         {
             Task.Run(async () => await Instance.LogAsync(obj.ToString(), level));
+        }
+
+        private async Task LogRemote(string message)
+        {
+            if (App.TelegramConnection == null)
+                return;
+
+            try
+            {
+                string id = Settings.Instance.TelegramDebugGroup; // private remote monitoring group
+                await App.TelegramConnection.Send(message, id);
+            }
+            catch (Exception) { }
         }
     }
 }

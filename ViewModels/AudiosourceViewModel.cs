@@ -53,7 +53,7 @@ namespace SpeechToText.ViewModels
             if (SelectedDevice != null)
             {
                 Settings.Instance.LastAudioDeviceId = SelectedDevice.Id;
-                Log("Selected device: " + SelectedDevice.Name);
+                //Log("Selected device: " + SelectedDevice.Name);
             }
         }
 
@@ -63,7 +63,7 @@ namespace SpeechToText.ViewModels
             _watcher = DeviceInformation.CreateWatcher(DeviceClass.AudioCapture);
             _watcher.Added += delegate (DeviceWatcher sender, DeviceInformation device)
             {
-                Log($"Device found: {device.Name} ({device.Id})");
+                //Log($"Device found: {device.Name} ({device.Id})");
                 Devices[device.Id] = device;
             };
             _watcher.Removed += delegate (DeviceWatcher sender, DeviceInformationUpdate device)

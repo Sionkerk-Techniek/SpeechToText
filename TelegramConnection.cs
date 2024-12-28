@@ -100,11 +100,11 @@ namespace SpeechToText
         }
 
         /// <summary>
-        /// Send a message to <see cref="ChatId"/> if <see cref="PlaystateViewModel.Instance.IsPosting"/> is true
+        /// Send a message to <see cref="ChatId"/>
         /// </summary>
         public async Task Send(string text)
         {
-            if (string.IsNullOrEmpty(Token) || string.IsNullOrEmpty(ChatId) || !PlaystateViewModel.Instance.IsPosting)
+            if (string.IsNullOrEmpty(Token) || string.IsNullOrEmpty(ChatId))
                 return;
 
             await _client.SendTextMessageAsync(ChatId, text);
