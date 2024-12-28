@@ -10,13 +10,15 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using System.Threading;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using System.Linq;
 
 namespace SpeechToText
 {
     public class TelegramConnection
     {
         internal string Token => Settings.Instance.TelegramToken;
-        private static string ChatId => Settings.Instance.TelegramGroup;
 
         private readonly TelegramBotClient _client;
 
@@ -55,7 +57,7 @@ namespace SpeechToText
             Logging.Log($"Telegram message received from {id}: " + text);
 
             // Only react to messages from these two sources
-            if (id != Settings.Instance.TelegramGroup && id != Settings.Instance.TelegramDebugGroup)
+            if (!Settings.Instance.TelegramGroup.ContainsValue(id) && id != Settings.Instance.TelegramDebugGroup)
             {
                 Logging.Log("Ignoring message from unauthorized user or group");
                 return;
@@ -67,18 +69,18 @@ namespace SpeechToText
                 Logging.Log("Received /starttranslation");
                 bool success = PlaystateViewModel.ChangeFromTelegramCommand(translate: true);
                 if (success)
-                    await Send("Starting translation");
+                    await Broadcast("Starting translation");
                 else
-                    await Send("Translation is already in progress");
+                    await Send("Translation is already in progress", id);
             }
             else if (text.StartsWith("/stoptranslation"))
             {
                 Logging.Log("Received /stoptranslation");
                 bool success = PlaystateViewModel.ChangeFromTelegramCommand(translate: false);
                 if (success)
-                    await Send("Stopping translation");
+                    await Broadcast("Stopping translation");
                 else
-                    await Send("Translation is already stopped");
+                    await Send("Translation is already stopped", id);
             }
             else if (text.StartsWith("/ping"))
             {
@@ -100,22 +102,23 @@ namespace SpeechToText
         }
 
         /// <summary>
-        /// Send a message to <see cref="ChatId"/>
-        /// </summary>
-        public async Task Send(string text)
-        {
-            if (string.IsNullOrEmpty(Token) || string.IsNullOrEmpty(ChatId))
-                return;
-
-            await _client.SendTextMessageAsync(ChatId, text);
-        }
-
-        /// <summary>
         /// Send a message to <paramref name="chatId"/>
         /// </summary>
         public async Task Send(string text, string chatId)
         {
             await _client.SendTextMessageAsync(chatId, text);
+        }
+
+        public async Task Send(IReadOnlyDictionary<string, string> translations)
+        {
+            foreach (KeyValuePair<string, string> translation in translations)
+                await Send(translation.Value, Settings.Instance.TelegramGroup[translation.Key]);
+        }
+
+        public async Task Broadcast(string text)
+        {
+            foreach (string chatId in Settings.Instance.TelegramGroup.Values)
+                await Send(text, chatId);
         }
     }
 }

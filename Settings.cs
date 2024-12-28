@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace SpeechToText
         public string LastAudioDeviceId { get; set; }
         public LogLevel MinimumLogLevel { get; set; } = LogLevel.Info;
         public string TelegramToken { get; init; }
-        public string TelegramGroup { get; init; }
+        public Dictionary<string, string> TelegramGroup { get; init; }
         public string TelegramDebugGroup { get; init; }
 
         public async static Task Load()

@@ -28,7 +28,8 @@ namespace SpeechToText
             SpeechTranslationConfig translationConfig = SpeechTranslationConfig.FromSubscription(
                 Settings.Instance.AzureKey, Settings.Instance.AzureRegion);
             translationConfig.SpeechRecognitionLanguage = "nl-NL";
-            translationConfig.AddTargetLanguage("uk");
+            foreach (string targetlanguage in Settings.Instance.TelegramGroup.Keys)
+                translationConfig.AddTargetLanguage(targetlanguage);
 
             // https://stackoverflow.com/questions/3992798/how-to-programmatically-get-the-current-audio-level
             // https://learn.microsoft.com/en-us/dotnet/standard/native-interop/pinvoke
@@ -100,14 +101,14 @@ namespace SpeechToText
             TranslationRecognitionResult result = e.Result;
             switch (result.Reason)
             {
+                // Send translations to Telegram, and write them to the UI and logs
                 case ResultReason.TranslatedSpeech:
-                    ShowMessage($"Recognized: {result.Text}",
-                        $"Translation: {result.Translations[_translator.TargetLanguages[0]]}");
-                    Log($"Recognized: {result.Text}\n Translation: " +
-                        $"{result.Translations[_translator.TargetLanguages[0]]}");
-                    Task.Run(async () => await App.TelegramConnection.Send(result.Translations[_translator.TargetLanguages[0]]));
-                    // TODO: do something with the translation
+                    string translations = string.Join("\n", result.Translations);
+                    ShowMessage($"Recognized: {result.Text}", $"Translations: {translations}");
+                    Log($"Recognized: {result.Text}\n Translation: {translations}");
+                    Task.Run(async () => await App.TelegramConnection.Send(result.Translations));
                     break;
+                // In other cases, display and/or log a relevant error message
                 case ResultReason.NoMatch:
                     ShowMessage($"Geen spraak herkend");
                     Log($"No speech recognized");
