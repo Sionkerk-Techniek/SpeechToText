@@ -12,7 +12,7 @@ namespace SpeechToText.ViewModels
     /// <summary>
     /// Handles resizing of the window, because apparently basic functionality isn't included
     /// </summary>
-    public class WindowViewModel : INotifyPropertyChanged
+    public partial class WindowViewModel : INotifyPropertyChanged
     {
         public static WindowViewModel Instance { get; private set; }
 
