@@ -1,9 +1,6 @@
 ﻿using SpeechToText.ViewModels;
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
-using System.Text.Encodings.Web;
-using System.Web;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
@@ -11,23 +8,16 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using System.Threading;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
-using System.Linq;
 
 namespace SpeechToText
 {
     public class TelegramConnection
     {
-        internal string Token => Settings.Instance.TelegramToken;
-
         private readonly TelegramBotClient _client;
 
         public TelegramConnection()
         {
             // Create client
-            if (_client != null)
-               return;
-
             _client = new TelegramBotClient(Settings.Instance.TelegramToken);
 
             // Subscribe to messages
@@ -39,7 +29,7 @@ namespace SpeechToText
             using CancellationTokenSource cts = new();
             _client.StartReceiving(
                 updateHandler: HandleMessage,
-                pollingErrorHandler: HandlePollingError,
+                errorHandler: HandlePollingError,
                 receiverOptions: receiverOptions,
                 cancellationToken: cts.Token
             );
@@ -106,7 +96,7 @@ namespace SpeechToText
         /// </summary>
         public async Task Send(string text, string chatId)
         {
-            await _client.SendTextMessageAsync(chatId, text);
+            await _client.SendMessage(chatId, text);
         }
 
         public async Task Send(IReadOnlyDictionary<string, string> translations)
