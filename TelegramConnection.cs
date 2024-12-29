@@ -1,4 +1,4 @@
-﻿using SpeechToText.ViewModels;
+using SpeechToText.ViewModels;
 using System;
 using System.Threading.Tasks;
 using Telegram.Bot;
@@ -23,7 +23,8 @@ namespace SpeechToText
             // Subscribe to messages
             ReceiverOptions receiverOptions = new()
             {
-                AllowedUpdates = Array.Empty<UpdateType>()
+                AllowedUpdates = Array.Empty<UpdateType>(),
+                DropPendingUpdates = true
             };
 
             using CancellationTokenSource cts = new();
@@ -33,7 +34,7 @@ namespace SpeechToText
                 receiverOptions: receiverOptions,
                 cancellationToken: cts.Token
             );
-
+            
             Logging.Log("Started listening to telegram updates");
         }
 
