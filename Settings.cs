@@ -34,7 +34,6 @@ namespace SpeechToText
             {
                 using Stream stream = await _folder.OpenStreamForReadAsync(_fileName);
                 Instance = JsonSerializer.Deserialize<Settings>(stream);
-                Instance.CheckForDefaults();
                 Log("Settings loaded");
             }
             catch (FileNotFoundException e)
@@ -89,7 +88,7 @@ namespace SpeechToText
         /// <summary>
         /// Display an error message if Azure or Telegram settings are left on the default value
         /// </summary>
-        private void CheckForDefaults()
+        public void CheckForDefaults()
         {
             if (AzureKey is "key" || AzureRegion is "region")
             {
@@ -102,7 +101,7 @@ namespace SpeechToText
                 || TelegramGroup?.Count == 0)
             {
                 Log("Telegram token, debug group or target group has not been set", LogLevel.Exception);
-                ShowError("Telegram token of groep is not niet ingesteld",
+                ShowError("Telegram token of groep is nog niet ingesteld",
                     "Open instellingen", ShowSettings);
             }
         }

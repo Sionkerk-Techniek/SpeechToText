@@ -18,7 +18,16 @@ namespace SpeechToText
         public TelegramConnection()
         {
             // Create client
-            _client = new TelegramBotClient(Settings.Instance.TelegramToken);
+            try
+            {
+                _client = new TelegramBotClient(Settings.Instance.TelegramToken);
+            }
+            catch (ArgumentException e)
+            {
+                Log($"Unable to create Telegram bot client: {e.Message}", LogLevel.Exception);
+                ShowError($"Telegram connectie niet gelukt: {e.Message}", "Exit", App.Current.Exit);
+                return;
+            }
 
             // Subscribe to all new updates
             ReceiverOptions receiverOptions = new()
@@ -181,9 +190,14 @@ namespace SpeechToText
         /// Show the Telegram error to the user
         /// </summary>
         private static void ShowError(string title, string description = "")
-        {
-            Log("SpeechRecognition.ShowError: " + title);
-            ErrormessageViewModel.ShowFromBackgroundthread(title, "ok", () => {}, description);
-        }
+            => ErrormessageViewModel.ShowFromBackgroundthread(title, "Ok", () => {}, description);
+
+        /// <summary>
+        /// Show the Telegram error to the user
+        /// </summary>
+        private static void ShowError(string title,
+            string actionmessage, Action action, string description = "")
+            => ErrormessageViewModel.ShowFromBackgroundthread(
+                title, actionmessage, action, description);
     }
 }

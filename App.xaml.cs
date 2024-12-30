@@ -24,7 +24,7 @@ namespace SpeechToText
 
         private void HandleException(object sender, UnhandledExceptionEventArgs e)
         {
-            Log($"Unhandled exception: {e}", LogLevel.Exception);
+            Log($"Unhandled exception: {e}, {e.Message}", LogLevel.Exception);
             Exit();
         }
 
@@ -34,10 +34,11 @@ namespace SpeechToText
         /// <param name="args">Details about the launch request and process.</param>
         protected override async void OnLaunched(LaunchActivatedEventArgs args)
         {
-            Logging.CreateLogger();
-            await Settings.Load();
+            CreateLogger();
             MainWindow = new MainWindow();
             MainWindow.Activate();
+            await Settings.Load();
+            Settings.Instance.CheckForDefaults();
             AudiosourceViewModel.Instance.Initialise();
             Recognizer = new SpeechRecognition();
             Recognizer.Initialise();
