@@ -49,8 +49,8 @@
             Severity="{x:Bind Errormessage.Severity}">
             <InfoBar.ActionButton>
                 <Button Content="{x:Bind Errormessage.ButtonMessage, Mode=OneWay}" 
-                        Click="{x:Bind Errormessage.PerformAction}"
-                        Visibility="{x:Bind Errormessage.ShowButton}"/>
+                        Click="{x:Bind Errormessage.PerformAction, Mode=OneWay}"
+                        Visibility="{x:Bind Errormessage.ShowButton, Mode=OneWay}"/>
             </InfoBar.ActionButton>
         </InfoBar>
 

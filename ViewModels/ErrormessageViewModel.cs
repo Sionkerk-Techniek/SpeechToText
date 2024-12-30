@@ -5,7 +5,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace SpeechToText.ViewModels
 {
-    public class ErrormessageViewModel : INotifyPropertyChanged
+    public partial class ErrormessageViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -22,6 +22,15 @@ namespace SpeechToText.ViewModels
 
         private int _height = 0;
 
+        /// <summary>
+        /// Show an infobar at the top of the UI. Use <see cref="ShowFromBackgroundthread"/>
+        /// when not calling from the UI thread.
+        /// </summary>
+        /// <param name="title">Title of the banner</param>
+        /// <param name="actionmessage">Text on the button</param>
+        /// <param name="action">Function that is called by the button</param>
+        /// <param name="description">Optional additional text between the title and button</param>
+        /// <param name="severity">Influences color of the infobar, default is red</param>
         public void Show(string title, string actionmessage, Action action, 
             string description = "", InfoBarSeverity severity = InfoBarSeverity.Error)
         {
@@ -44,6 +53,9 @@ namespace SpeechToText.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(string.Empty));
         }
 
+        /// <summary>
+        /// Reset and hide the infobar
+        /// </summary>
         public void Close()
         {
             IsOpen = false;
@@ -57,12 +69,16 @@ namespace SpeechToText.ViewModels
             _height = 0;
         }
 
-        public void PerformAction()
-        {
-            OnClick();
-            Close();
-        }
+        public void PerformAction() => OnClick();
 
+        /// <summary>
+        /// Show an infobar at the top of the UI
+        /// </summary>
+        /// <param name="title">Title of the banner</param>
+        /// <param name="actionmessage">Text on the button</param>
+        /// <param name="action">Function that is called by the button</param>
+        /// <param name="description">Optional additional text between the title and button</param>
+        /// <param name="severity">Influences color of the infobar, default is red</param>
         public static void ShowFromBackgroundthread(string title, string actionmessage,
             Action action, string description = "", InfoBarSeverity severity = InfoBarSeverity.Error)
         {
@@ -74,7 +90,7 @@ namespace SpeechToText.ViewModels
         }
 
         /// <summary>
-        /// Resize the window so nothing falls off
+        /// Resize the window so nothing falls off when showing the infobar
         /// </summary>
         private static void ErrorHeaderResized(object sender, SizeChangedEventArgs e)
         {
