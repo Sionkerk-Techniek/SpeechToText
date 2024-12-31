@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
 
@@ -26,6 +23,9 @@ namespace SpeechToText
         private StorageFile _file;
         private StreamWriter _stream;
 
+        /// <summary>
+        /// Create a new logging instance and logfile
+        /// </summary>
         public static void CreateLogger()
         {
             Instance = new Logging();
@@ -39,6 +39,9 @@ namespace SpeechToText
             }).Wait();
         }
 
+        /// <summary>
+        /// Write any remaining data in the stream to the file before destroying this object
+        /// </summary>
         ~Logging()
         {
             _stream?.Flush();
@@ -54,28 +57,45 @@ namespace SpeechToText
             { LogLevel.Exception, "EXC" }
         };
 
+        /// <summary>
+        /// Write <paramref name="message"/> to the file and Telegram debug group 
+        /// if <paramref name="level"/> is at least <see cref="Settings.MinimumLogLevel"/>
+        /// </summary>
         public async Task LogAsync(string message, LogLevel level = LogLevel.Info)
         {
             if (level < Settings.Instance.MinimumLogLevel)
                 return;
-
+            
+            // Write to file
             await _stream.WriteLineAsync($"[{_prefix[level]} {DateTime.Now:HH:mm:ss.fff}] {message}");
             await _stream.FlushAsync();
             
+            // Also send the message to the debug group
             await LogRemote(message);
         }
 
+        /// <summary>
+        /// Write <paramref name="message"/> to the file and Telegram debug group
+        /// if <paramref name="level"/> is at least <see cref="Settings.MinimumLogLevel"/>
+        /// </summary>
         public static void Log(string message, LogLevel level = LogLevel.Info)
         {
             Task.Run(async () => await Instance.LogAsync(message, level)).Wait();
         }
 
+        /// <summary>
+        /// Write <paramref name="obj"/>.ToString() to he file and Telegram debug group
+        /// if <paramref name="level"/> is at least <see cref="Settings.MinimumLogLevel"/>
+        /// </summary>
         public static void Log(object obj, LogLevel level = LogLevel.Info)
         {
-            Task.Run(async () => await Instance.LogAsync(obj.ToString(), level));
+            Task.Run(async () => await Instance.LogAsync(obj.ToString(), level)).Wait();
         }
 
-        private async Task LogRemote(string message)
+        /// <summary>
+        /// Send <paramref name="message"/> to the Telegram debug group
+        /// </summary>
+        private static async Task LogRemote(string message)
         {
             if (App.TelegramConnection == null)
                 return;

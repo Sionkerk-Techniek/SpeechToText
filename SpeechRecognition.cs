@@ -13,24 +13,31 @@ namespace SpeechToText
         private AudioConfig _audioConfig;
         private TranslationRecognizer _translator;
 
+        /// <summary>
+        /// Indicates whether the translation can be started
+        /// </summary>
         private bool _isReady = false;
 
         /// <summary>
-        /// Create the configuration and 
+        /// Set audio input, languages and event handlers for the speech to text service
         /// </summary>
         public void Initialise()
         {
             if (AudiosourceViewModel.Instance.SelectedDevice == null)
             {
+                Log("Selected audio device is null");
                 ShowMessage("Selecteer een audiobron");
             }
 
+            // Set Azure key and region, source language and target languages
             SpeechTranslationConfig translationConfig = SpeechTranslationConfig.FromSubscription(
                 Settings.Instance.AzureKey, Settings.Instance.AzureRegion);
             translationConfig.SpeechRecognitionLanguage = "nl-NL";
             foreach (string targetlanguage in Settings.Instance.TelegramGroup.Keys)
                 translationConfig.AddTargetLanguage(targetlanguage);
 
+            // Set the default input as the audio source, and attach translation event handlers
+            // TODO: get microphone selection working
             // https://stackoverflow.com/questions/3992798/how-to-programmatically-get-the-current-audio-level
             // https://learn.microsoft.com/en-us/dotnet/standard/native-interop/pinvoke
             _audioConfig = AudioConfig.FromDefaultMicrophoneInput();
@@ -46,6 +53,9 @@ namespace SpeechToText
             _isReady = true;
         }
 
+        /// <summary>
+        /// Stop the translation and reinitialise
+        /// </summary>
         public void Reset()
         {
             _translator?.Dispose();
@@ -54,6 +64,9 @@ namespace SpeechToText
             Initialise();
         }
 
+        /// <summary>
+        /// Start continuous translation
+        /// </summary>
         public void Start()
         {
             if (!_isReady || _translator is null)
@@ -62,11 +75,17 @@ namespace SpeechToText
             _translator.StartContinuousRecognitionAsync();
         }
 
+        /// <summary>
+        /// Stop continuous translation
+        /// </summary>
         public void Stop()
         {
             _translator?.StopContinuousRecognitionAsync();
         }
 
+        /// <summary>
+        /// Handle errors returned by Azure
+        /// </summary>
         public void OnTranslationError(object sender, TranslationRecognitionCanceledEventArgs e)
         {
             PlaystateViewModel.ChangeFromBackgroundthread(isPlaying: false);
@@ -96,6 +115,10 @@ namespace SpeechToText
             }
         }
 
+        /// <summary>
+        /// Send translations to the respective Telegram groups,
+        /// or show a message in the debug group if no speech was recognized
+        /// </summary>
         private void OnSpeechTranslated(object sender, TranslationRecognitionEventArgs e)
         {
             TranslationRecognitionResult result = e.Result;
@@ -126,15 +149,19 @@ namespace SpeechToText
             }
         }
 
+        /// <summary>
+        /// Show a new log in the UI with <paramref name="message"/>,
+        /// which also shows <paramref name="subtext"/> when unfolded
+        /// </summary>
         private static void ShowMessage(string message, string subtext = "")
-        {
-            LogCollectionViewModel.AddLogFromBackgroundthread(message, subtext);
-        }
+            => LogCollectionViewModel.AddLogFromBackgroundthread(message, subtext);
 
-        private static void ShowError(string title, string actionmessage, Action action, string description = "")
-        {
-            Log("SpeechRecognition.ShowError: " + title);
-            ErrormessageViewModel.ShowFromBackgroundthread(title, actionmessage, action, description);
-        }
+        /// <summary>
+        /// Show an error to the user in an infobar
+        /// </summary>
+        private static void ShowError(string title,
+            string actionmessage, Action action, string description = "")
+            => ErrormessageViewModel.ShowFromBackgroundthread(
+                title, actionmessage, action, description);
     }
 }
